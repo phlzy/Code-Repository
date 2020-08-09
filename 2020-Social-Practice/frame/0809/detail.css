@@ -1,0 +1,77 @@
+/*
+ * @Author: Watson 
+ * @Date: 2020-08-09 21:41:23 
+ * @Last Modified by: Watson
+ * @Last Modified time: 2020-08-09 21:43:00
+ */
+header{
+    /* a picture */
+    width: 100%;
+    height: 300px;
+    /* background-image: url(); in html file */
+    background-repeat: no-repeat;
+    background-position: 0%;
+    border-bottom: 1px solid white;
+    position: relative; /*or absolute*/
+    top: 0;
+    left: 0;
+    background: center #000;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    z-index: -1;
+}
+
+#container {
+    /* contain everything */
+    height: 100%;
+    position: relative;
+}
+
+.outer {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 0px;
+}
+
+.article-inner {
+    background: #fff;
+    -webkit-box-shadow: 1px 2px 3px #ddd;
+    box-shadow: 1px 2px 3px #ddd;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    overflow: hidden;
+    padding: 10px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 15px;
+}
+
+.article-title {
+    height: 50px;
+    font-size: x-large;
+    text-align: center;
+    align-items: center;
+    vertical-align: middle;
+    
+}
+
+.article-subtitle {
+    height: 35px;
+    font-size: large;
+    text-align: center;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.article-text {
+    text-indent: 2em;
+    text-align: left;
+}
+
+body{
+    /*only left and right need margin*/
+    margin: 0% 12% 0% 12%;
+    background: #eee;
+}
+
