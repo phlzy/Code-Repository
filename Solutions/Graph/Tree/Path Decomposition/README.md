@@ -1,1 +1,1 @@
-path decomposition
+heavy path decomposition
