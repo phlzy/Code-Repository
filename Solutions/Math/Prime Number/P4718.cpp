@@ -89,7 +89,7 @@ inline ll Pollard_Rho(ll x)
         for (register int stp = 1; stp <= goal; ++stp)
         {
             //t = calc(t, c, x);
-            t = (t * t + c) % x;
+            t = (ll)((lll)t * t + c) % x;
             val = (lll)val * abs(t - s) % x;
             if ((stp % 127) == 0)
             {
