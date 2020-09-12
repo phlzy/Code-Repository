@@ -7,6 +7,8 @@
 #include <graphics.h>
 #include <conio.h>
 #include <windows.h>
+#include <algorithm>
+using std::swap;
 
 struct point
 {
@@ -30,10 +32,10 @@ struct box
 
 };
 
+inline bool inBorder(const int& x, const int& y);
 
-
-void GameOver(bool flag);
+bool GameOver(box& b);
 
 void draw(box& b);
 
-void MouseCheck();
+bool MoveCheck(box& b);

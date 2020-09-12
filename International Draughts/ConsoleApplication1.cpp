@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <utility>
 #include <stack>
+#include <queue> 
 using std::stack;
 using std::pair;
+using std::priority_queue;
 using std::make_pair;
+using std::swap;
 
 typedef pair<int, int> pii;
 
@@ -19,13 +22,6 @@ const int dx[4] = { 1,1,-1,-1 };
 const int dy[4] = { 1,-1,1,-1 };
 
 bool vis[10][10];
-
-inline bool inBorder(const int& x, const int& y) // check 
-{
-	if (x < 1 || x > 10 || y < 1 || y > 10)
-		return false;
-	return true;
-}
 
 stack<pii> way_p;
 
@@ -53,7 +49,7 @@ int search(int x, int y, int col) // x conter DFS
 			{
 				vis[x + dx[s]][y + dy[s]] = true;
 				int tmp = search(x + 2 * dx[s], y + 2 * dy[s], 1);
-				if (tmp > cnt) 
+				if (tmp > cnt)
 				{
 					way_p.push(make_pair(x + 2 * dx[s], y + 2 * dy[s]));
 					cnt = tmp;
@@ -91,13 +87,13 @@ int search(int x, int y, int col) // x conter DFS
 
 stack<pii> way_k;
 
-int search_king(int x, int y,int col)
+int search_king(int x, int y, int col)
 {
 	point& cur = chessboard.field[x][y];
 	if (!cur.valid)
 		return 0;
 	// int col = chessboard.field[x][y].ChessType;
-	int cnt = 0,p,q;
+	int cnt = 0, p, q;
 	// vis[x][y] = true;
 	for (int s = 0; s < 4; ++s)
 	{
@@ -106,7 +102,7 @@ int search_king(int x, int y,int col)
 			p = x + i * dx[s], q = y + i * dy[s];
 			if (!inBorder(p, q) || chessboard.field[p][q].ChessType == col || vis[p][q])
 				break;
-			
+
 			point& now = chessboard.field[p][q];
 			switch (col)
 			{
@@ -118,6 +114,7 @@ int search_king(int x, int y,int col)
 					)
 				{
 					vis[p][q] = true;
+					memset(vis, 0, sizeof(vis));
 					int tmp = search(p + dx[s], q + dy[s], 1);
 					if (tmp > cnt)
 					{
@@ -138,6 +135,7 @@ int search_king(int x, int y,int col)
 					)
 				{
 					vis[p][q] = true;
+					memset(vis, 0, sizeof(vis));
 					int tmp = max(cnt, search(p, q, 2));
 					if (tmp > cnt)
 					{
@@ -152,9 +150,46 @@ int search_king(int x, int y,int col)
 				break;
 			}
 		}
-		
+
 	}
 	return cnt;
+}
+
+inline bool isBlack(const point& _p)
+{
+	return _p.ChessType == 2;
+}
+
+
+bool move()
+{
+	for (int i = 1; i <= 10; ++i)
+	{
+		for (int j = 10; j >= 1; --j)
+		{
+			point& cur = chessboard.field[i][j];
+			if (!isBlack(cur))
+				continue;
+			// bool flag_move = true;
+			if (inBorder(i - 1, j + 1))
+			{
+				if (chessboard.field[i - 1][j - 1].ChessType == 0)
+				{
+					swap(chessboard.field[i - 1][j - 1], chessboard.field[i][j]);
+					return true;
+				}
+			}
+			else if (inBorder(i + 1, j + 1))
+			{
+				if (chessboard.field[i - 1][j + 1].ChessType == 0)
+				{
+					swap(chessboard.field[i - 1][j + 1], chessboard.field[i][j]);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 /*
@@ -167,11 +202,68 @@ int search_king(int x, int y,int col)
 	|- 5. player's turn
 	|- loop (goto 1)
 */
-void game() 
+void game()
 {
-	//GameOver();
-	
-	
+	// bool player = MoveCheck(chessboard);
+	//while (!MoveCheck(chessboard));// player's turn
+	if (!MoveCheck(chessboard))
+		return;
+	int max_way = 0, pos_x = 0, pos_y = 0;
+	for (int i = 1; i <= 10; ++i)
+	{
+		for (int j = 1; j <= 10; ++j)
+		{
+			point& cur = chessboard.field[i][j];
+			if (cur.ChessType != 2)
+				continue;
+			memset(vis, 0, sizeof(vis));
+			if (search(i, j, 2) > max_way)
+			{
+				while (!way_p.empty())
+					way_p.pop();
+				memset(vis, 0, sizeof(vis));
+				max_way = search(i, j, 2);
+			}
+		}
+	}
+	for (int i = 1; i <= 10; ++i)
+	{
+		for (int j = 1; j <= 10; ++j)
+		{
+			point& cur = chessboard.field[i][j];
+			if (cur.ChessType != 2)
+				continue;
+			memset(vis, 0, sizeof(vis));
+			if (search(i, j, 2) == max_way)
+			{
+				while (!way_p.empty())
+					way_p.pop();
+				memset(vis, 0, sizeof(vis));
+				max_way = search(i, j, 2);
+				pos_x = i, pos_y = j;
+				break;
+			}
+		}
+	}
+	if (way_p.empty())
+	{
+		move();
+		return;
+	}
+	int res_x = 0, res_y = 0;
+	chessboard.field[pos_x][pos_y].ChessType = 0;
+	while (!way_p.empty())
+	{
+		int tmp_x = way_p.top().first;
+		int tmp_y = way_p.top().second;
+		way_p.pop();
+		res_x = 2 * tmp_x - pos_x; 
+		res_y = 2 * tmp_y - pos_y;
+		pos_x = tmp_x;
+		pos_y = tmp_y;
+	}
+	chessboard.field[res_x][res_y].ChessType = 2;
+	return;
 }
 
 
@@ -186,26 +278,25 @@ int main()
 	setlinestyle(PS_SOLID, 1);
 	// memset(vis, 0, sizeof(vis));
 	draw(chessboard);
-	/*
-	while (1) {
 
+	while (1)
+	{
+		if (GameOver(chessboard))
+			break;
+		draw(chessboard);
+		game();
+		move();
+		Sleep(10);
+		cleardevice();
+		
 	}
-	*/
+
 	system("pause");
 
 	return 0;
 }
 
 
-
-
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单
 // 调试程序: F5 或调试 >“开始调试”菜单
 
-// 入门使用技巧: 
-//   1. 使用解决方案资源管理器窗口添加/管理文件
-//   2. 使用团队资源管理器窗口连接到源代码管理
-//   3. 使用输出窗口查看生成输出和其他消息
-//   4. 使用错误列表窗口查看错误
-//   5. 转到“项目”>“添加新项”以创建新的代码文件，或转到“项目”>“添加现有项”以将现有代码文件添加到项目
-//   6. 将来，若要再次打开此项目，请转到“文件”>“打开”>“项目”并选择 .sln 文件
