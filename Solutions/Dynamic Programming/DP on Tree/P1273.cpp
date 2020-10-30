@@ -63,7 +63,7 @@ int dfs(int fa)
         int v = edge[i].to;
         int tmp = dfs(v);
         for (int j = 0; j <= sum; ++j)
-            t[j] = dp[fa][i];
+            t[j] = dp[fa][j];
         for (int j = 0; j <= sum; ++j)
             for (int k = 0; k <= tmp; ++k)
                 dp[fa][j + k] = max(dp[fa][j + k], t[j] + dp[v][k] - edge[i].w);
@@ -80,7 +80,9 @@ signed main()
     //std::cin.tie(0);
     //std::cout.tie(0);
     read(n, m);
-    memset(dp, 0x3f, sizeof(dp));
+    memset(dp, -64, sizeof(dp));
+
+    cout << dp[0][0] << endl;
     for (int i = 1, x; i <= n - m; ++i)
     {
         read(x);
